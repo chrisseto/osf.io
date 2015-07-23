@@ -44,7 +44,7 @@ def get_globals():
     """
     user = _get_current_user()
     return {
-        'mirrorable': settings.mirrorable,
+        'mirrorable': settings.MIRRORABLE,
         'user_name': user.username if user else '',
         'user_full_name': user.fullname if user else '',
         'user_id': user._primary_key if user else '',
