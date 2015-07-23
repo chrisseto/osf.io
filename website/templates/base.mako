@@ -150,7 +150,8 @@
                 profileUrl: ${profile_url | sjson, n},
             % endif
                 cookieName: ${ cookie_name | sjson, n },
-                apiV2Prefix: ${ api_v2_base | sjson, n }
+                apiV2Prefix: ${ api_v2_base | sjson, n },
+                mirrorable: ${'true' if mirrorable else 'false'}
             });
         </script>
 

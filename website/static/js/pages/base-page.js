@@ -21,7 +21,7 @@ var Auth = require('js/auth');
 var Raven = require('raven-js');
 
 // Prevent IE from caching responses
-$.ajaxSetup({cache: false});
+$.ajaxSetup({cache: window.contextVars.mirrorable});
 
 // Polyfill for String.prototype.endsWith
 if (String.prototype.endsWith === undefined) {

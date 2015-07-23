@@ -44,6 +44,8 @@ PROXY_ADDRS = []
 DEV_MODE = False
 DEBUG_MODE = False
 
+MIRRORABLE = False
+
 LOG_PATH = os.path.join(APP_PATH, 'logs')
 TEMPLATES_PATH = os.path.join(BASE_PATH, 'templates')
 ANALYTICS_PATH = os.path.join(BASE_PATH, 'analytics')

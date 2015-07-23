@@ -11,7 +11,7 @@ var $osf = require('js/osfHelpers');
 ko.punches.enableAll();
 
 // Disable IE Caching of JSON
-$.ajaxSetup({ cache: false });
+$.ajaxSetup({ cache: window.contextVars.mirrorable });
 
 //https://stackoverflow.com/questions/7731778/jquery-get-query-string-parameters
 
