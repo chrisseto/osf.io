@@ -39,7 +39,7 @@
 
                             % if addons[addon]['has_page']:
                                 <li>
-                                    <a href="${node['url']}${addons[addon]['short_name']}">
+                                    <a href="${node['url']}${addons[addon]['short_name']}/">
 
                                         % if addons[addon]['icon']:
                                             <img src="${addons[addon]['icon']}" class="addon-logo"/>
