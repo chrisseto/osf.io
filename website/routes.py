@@ -125,6 +125,39 @@ def goodbye():
     return {}
 
 
+def sitemap():
+    from website.models import Guid
+    from framework.flask import app
+    from framework.auth.core import User
+    from website.project.model import Node
+    from modularodm import Q
+
+    sitemap = [
+        rule.rule
+        for rule in
+        app.url_map.iter_rules()
+        if not rule.arguments and
+        'GET' in rule.methods
+    ]
+
+    for guid in Guid.find():
+        if guid.referent is not None:
+            sitemap.append('/{}/'.format(guid._id))
+
+    for node in Node.find(Q('is_public', 'eq', True)):
+        sitemap.extend(node.generate_public_url_map())
+
+    for rule in app.url_map.iter_rules():
+        if set(['uid']) != rule.arguments:
+            continue
+        for user in User.find():
+            sitemap.append(rule.build({'uid': user._id})[1])
+
+    return app.make_response('<ul>' + '\n'.join([
+        '<li><a href="{0}">{0}</a></li>'.format(r) for r in sitemap
+    ]) + '</ul>')
+
+
 def make_url_map(app):
     '''Set up all the routes for the OSF app.
 
@@ -141,6 +174,7 @@ def make_url_map(app):
 
     ### GUID ###
     process_rules(app, [
+        Rule(['/sitemap/'], ['get'], sitemap, notemplate),
 
         Rule(
             [
