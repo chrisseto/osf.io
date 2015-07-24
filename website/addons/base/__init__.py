@@ -688,6 +688,9 @@ class AddonNodeSettingsBase(AddonSettingsBase):
         """Whether the node has added credentials for this addon."""
         return False
 
+    def generate_public_url_map(self):
+        return []
+
     def to_json(self, user):
         ret = super(AddonNodeSettingsBase, self).to_json(user)
         ret.update({

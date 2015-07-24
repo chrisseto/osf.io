@@ -9,7 +9,7 @@ from bleach.callbacks import nofollow
 
 import markdown
 from markdown.extensions import codehilite, fenced_code, wikilinks
-from modularodm import fields
+from modularodm import Q, fields
 
 from framework.forms.utils import sanitize
 from framework.guid.model import GuidStoredObject
@@ -42,6 +42,35 @@ class AddonWikiNodeSettings(AddonNodeSettingsBase):
         if save:
             clone.save()
         return clone, None
+
+    def generate_public_url_map(self):
+        ret = [
+            url.format(self.owner._id) for url in [
+                '/project/{}/wiki/',
+                '/project/{}/wiki/home/',
+                '/api/v1/project/{}/wiki/widget/',
+                '/api/v1/project/{}/wiki/home/grid/',
+                '/api/v1/project/{}/wiki/home/content/',
+                '/api/v1/project/{}/wiki/home/content/previous/',
+                '/api/v1/project/{}/wiki/home/content/current/',
+            ]
+        ]
+
+        for page in NodeWikiPage.find(Q('node', 'eq', self.owner._id)):
+            ret.extend(
+                url.format(node=self.owner, wiki=page)
+                for url in [
+                    '/project/{node._id}/wiki/id/{wiki._id}/',
+                    '/project/{node._id}/wiki/{wiki.page_name}/',
+                    '/api/v1/project/{node._id}/wiki/{wiki.page_name}/grid/',
+                    '/api/v1/project/{node._id}/wiki/{wiki.page_name}/draft/',
+                    '/api/v1/project/{node._id}/wiki/{wiki.page_name}/content/',
+                    '/api/v1/project/{node._id}/wiki/{wiki.page_name}/content/previous/',
+                    '/api/v1/project/{node._id}/wiki/{wiki.page_name}/content/current/',
+                    '/api/v1/project/{node._id}/wiki/{wiki.page_name}/content/{wiki.version}/',
+                ])
+
+        return ret
 
     def to_json(self, user):
         return {}
