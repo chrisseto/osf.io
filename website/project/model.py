@@ -561,6 +561,17 @@ class Node(GuidStoredObject, AddonModelMixin, IdentifierMixin):
         'category',
     ]
 
+    PUBLIC_URLS = [
+        '/project/{}/',
+        '/api/v1/project/{}/',
+        '/api/v1/citations/styles/',
+        '/api/v1/project/{}/citation/',
+        '/api/v1/project/{}/comments/',
+        '/api/v1/project/{}/files/grid/',
+        '/api/v1/project/{}/comments/discussion/',
+        '/api/v1/project/{}/contributors_abbrev/',
+    ]
+
     _id = fields.StringField(primary=True)
 
     date_created = fields.DateTimeField(auto_now_add=datetime.datetime.utcnow, index=True)
@@ -721,6 +732,20 @@ class Node(GuidStoredObject, AddonModelMixin, IdentifierMixin):
     def ids_above(self):
         parents = self.parents
         return {p._id for p in parents}
+
+    def generate_public_url_map(self):
+        return sum([
+            addon.generate_public_url_map()
+            for addon in
+            self.get_addons()
+        ], []) + [
+            url.format(self._id)
+            for url in
+            self.PUBLIC_URLS
+        ] + [
+            '/api/v1/project/{}/log/?page={}'.format(self._id, x)
+            for x in xrange((len(self.logs) / 10) + 1)
+        ]
 
     def can_edit(self, auth=None, user=None):
         """Return if a user is authorized to edit this node.
