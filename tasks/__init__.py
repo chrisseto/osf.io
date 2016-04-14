@@ -34,6 +34,9 @@ else:
 ns = Collection()
 ns.add_collection(Collection.from_module(admin_tasks), name='admin')
 
+from tasks import migration
+ns.add_collection(Collection.from_module(migration, name='migration'))
+
 
 def task(*args, **kwargs):
     """Behaves the same way as invoke.task. Adds the task
