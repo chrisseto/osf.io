@@ -27,7 +27,15 @@ def copy_log(log, node_id):
     clone = deepcopy(log)
     clone['_id'] = str(ObjectId())
     clone.pop('__backrefs', None)
-    clone['original_node'] = get_log_subject(log)
+    # node_removed is the only log type where params.project is
+    # not the same as the node that the log is saved on
+    if log['action'] == NodeLog.NODE_REMOVED:
+        # For node_removed logs, original node should point to the
+        # deleted node
+        original_node = log['params']['project']
+    else:
+        original_node = get_log_subject(log)
+    clone['original_node'] = original_node
     clone['node'] = node_id.lower()
     return clone
 
@@ -95,10 +103,10 @@ def migrate(dry=True):
             should_copy = migrate_log(log=log, node_id=node['_id'])
             if should_copy:
                 clone = copy_log(log=log, node_id=node['_id'])
-                remaining_log_ids.add(clone['_id'])  # XX
+                remaining_log_ids.add(clone['_id'])
                 to_insert.append(clone)
             else:
-                remaining_log_ids.remove(log['_id'])  # XX
+                remaining_log_ids.remove(log['_id'])
                 done += 1
 
             if len(to_insert) > 9999:
