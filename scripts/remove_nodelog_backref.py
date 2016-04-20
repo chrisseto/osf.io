@@ -135,6 +135,8 @@ def migrate(dry=True):
             node_ids.append(log_subject)
 
         for node_id in node_ids:
+            if db.node.find_one({'_id': node_id, 'logs': log['_id']}):
+                continue
             should_copy = migrate_log(log=log, node_id=node_id)
             if should_copy:
                 clone = copy_log(log=log, node_id=node_id)
