@@ -24,6 +24,8 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
+    'addons.base',
+    'addons.dropbox',
     'osf_models',
 )
 PASSWORD_HASHERS = (

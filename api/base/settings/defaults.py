@@ -75,7 +75,9 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'django_extensions',
     'debug_toolbar',
-    'osf_models'
+    'addons.base',
+    'addons.dropbox',
+    'osf_models',
 )
 
 # local development using https

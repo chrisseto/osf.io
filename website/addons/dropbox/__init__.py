@@ -1,11 +1,15 @@
 import os
 
-from website.addons.dropbox import model, routes, views
+from django.apps import apps
+
+# from addons.dropbox import models
+from website.addons.dropbox import routes, views
 
 
-MODELS = [model.DropboxUserSettings, model.DropboxNodeSettings]
-USER_SETTINGS_MODEL = model.DropboxUserSettings
-NODE_SETTINGS_MODEL = model.DropboxNodeSettings
+MODELS = []
+# MODELS = [apps.get_mode('dropbox', 'DropboxUserSettings'), apps.get_mode('dropbox', 'DropboxNodeSettings')]
+# USER_SETTINGS_MODEL = apps.get_model('dropbox', 'DropboxUserSettings')
+# NODE_SETTINGS_MODEL = apps.get_model('dropbox', 'DropboxNodeSettings')
 
 ROUTES = [routes.auth_routes, routes.api_routes]
 
