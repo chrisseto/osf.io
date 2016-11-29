@@ -3,6 +3,7 @@ import urlparse
 
 from modularodm import fields
 
+from framework.encryption import EncryptedStringField
 from framework.celery_tasks.handlers import enqueue_task
 from framework.exceptions import PermissionsError
 from framework.guid.model import GuidStoredObject
@@ -15,6 +16,7 @@ from website.project.taxonomies import Subject, validate_subject_hierarchy
 from website.util import api_v2_url
 from website.util.permissions import ADMIN
 from website import settings
+
 
 @unique_on(['node', 'provider'])
 class PreprintService(GuidStoredObject):
@@ -170,6 +172,7 @@ class PreprintProvider(StoredObject):
     description = fields.StringField()
     banner_name = fields.StringField()
     external_url = fields.StringField()
+    access_token = EncryptedStringField()
 
     def get_absolute_url(self):
         return '{}preprint_providers/{}'.format(self.absolute_api_v2_url, self._id)
