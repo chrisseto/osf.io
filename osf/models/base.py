@@ -659,11 +659,8 @@ class GuidMixin(BaseIDMixin):
     @classmethod
     def load(cls, q):
         try:
-            content_type = ContentType.objects.get_for_model(cls)
-            # if referent doesn't exist it will return None
-            return Guid.objects.get(_id=q, content_type=content_type).referent
-        except Guid.DoesNotExist:
-            # modm doesn't throw exceptions when loading things that don't exist
+            return cls.objects.filter(_guids___id=q)[0]
+        except (IndexError, cls.DoesNotExist):
             return None
 
     @property
