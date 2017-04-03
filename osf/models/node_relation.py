@@ -1,12 +1,15 @@
 from django.db import models
 
 from .base import BaseModel, ObjectIDMixin
+from osf.utils.manager import IncludeQuerySet
 
 
 class NodeRelation(ObjectIDMixin, BaseModel):
     parent = models.ForeignKey('AbstractNode', related_name='node_relations')
     child = models.ForeignKey('AbstractNode')
     is_node_link = models.BooleanField(default=False, db_index=True)
+
+    includable_objects = IncludeQuerySet.as_manager()
 
     def __unicode__(self):
         return '{}, parent={}, child={}'.format(

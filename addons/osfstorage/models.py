@@ -255,7 +255,9 @@ class OsfStorageFile(OsfStorageFileNode, File):
         if metadata:
             version.update_metadata(metadata)
 
-        version._find_matching_archive(save=False)
+        # TODO Figure out how to index a JSONB field
+        # Backup scripts will populate this for now
+        # version._find_matching_archive(save=False)
 
         version.save()
         self.versions.add(version)
@@ -265,9 +267,7 @@ class OsfStorageFile(OsfStorageFileNode, File):
 
     def get_version(self, version=None, required=False):
         if version is None:
-            if self.versions.exists():
-                return self.versions.last()
-            return None
+            return self.versions.last()
 
         try:
             return self.versions.all()[int(version) - 1]

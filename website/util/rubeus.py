@@ -170,7 +170,25 @@ class NodeFileCollector(object):
         rv = []
         if not node.can_view(self.auth):
             return rv
-        for child in node.get_nodes(is_deleted=False):
+
+        qs = apps.get_model('osf', 'NodeRelation').includable_objects.filter(
+            parent=node,
+            child__is_deleted=False,
+        ).include(
+            'child__guids',
+            'child__addons_osfstorage_node_settings__owner__guids',
+            'child__addons_box_node_settings__owner__guids',
+            'child__addons_dataverse_node_settings__owner__guids',
+            'child__addons_dropbox_node_settings__owner__guids',
+            'child__addons_figshare_node_settings__owner__guids',
+            'child__addons_github_node_settings__owner__guids',
+            'child__addons_googledrive_node_settings__owner__guids',
+            'child__addons_owncloud_node_settings__owner__guids',
+            'child__addons_s3_node_settings__owner__guids',
+        )
+
+        for rel in qs:
+            child = rel.child
             if not child.can_view(self.auth):
                 if child.primary:
                     for desc in child.find_readable_descendants(self.auth):

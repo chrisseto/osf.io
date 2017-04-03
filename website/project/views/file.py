@@ -23,4 +23,20 @@ def grid_data(auth, node, **kwargs):
     """View that returns the formatted data for rubeus.js/hgrid
     """
     data = request.args.to_dict()
+    from django.apps import apps
+    Node = apps.get_model('osf', 'AbstractNode')
+
+    node = Node.objects.include(
+        'guids',
+        'addons_osfstorage_node_settings__owner__guids',
+        'addons_box_node_settings__owner__guids',
+        'addons_dataverse_node_settings__owner__guids',
+        'addons_dropbox_node_settings__owner__guids',
+        'addons_figshare_node_settings__owner__guids',
+        'addons_github_node_settings__owner__guids',
+        'addons_googledrive_node_settings__owner__guids',
+        'addons_owncloud_node_settings__owner__guids',
+        'addons_s3_node_settings__owner__guids',
+    ).get(id=node.id)
+
     return {'data': rubeus.to_hgrid(node, auth, **data)}

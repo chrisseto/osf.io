@@ -176,14 +176,21 @@ class AddonModelMixin(models.Model):
             settings_model = self._settings_model(name)
         except LookupError:
             return None
+
         if not settings_model:
             return None
+
+        field = settings_model._meta.get_field('owner')
+        if hasattr(self, field.rel.get_accessor_name()):
+            return getattr(self, field.rel.get_accessor_name())
+
         try:
             settings_obj = settings_model.objects.get(owner=self)
             if not settings_obj.deleted or deleted:
                 return settings_obj
         except ObjectDoesNotExist:
             pass
+
         return None
 
     def add_addon(self, addon_name, auth=None, override=False, _force=False):
