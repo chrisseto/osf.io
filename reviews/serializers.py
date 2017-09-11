@@ -15,10 +15,8 @@ from api.base.serializers import RelationshipField
 from osf.models import PreprintService
 
 from reviews.exceptions import InvalidTransitionError
-from reviews.models import ReviewLog
 from reviews.workflow import Actions
 from reviews.workflow import States
-from reviews.workflow import Workflows
 
 
 # Pseudo-class to hide the creator field if it shouldn't be shown
@@ -41,30 +39,34 @@ def IfCanViewLogCreator(field_cls):
     return IfCanViewLogCreatorField
 
 
-class ReviewableCountingRelationshipField(RelationshipField):
+class ReviewableCountsRelationshipField(RelationshipField):
 
     def __init__(self, *args, **kwargs):
         kwargs['related_meta'] = kwargs.get('related_meta') or {}
-        kwargs['related_meta']['include_status_counts'] = True
-        super(ReviewableCountingRelationshipField, self).__init__(*args, **kwargs)
+        if 'include_status_counts' not in kwargs['related_meta']:
+            kwargs['related_meta']['include_status_counts'] = True
+        super(ReviewableCountsRelationshipField, self).__init__(*args, **kwargs)
 
     def get_meta_information(self, metadata, provider):
-        metadata = metadata or {}
+        # Clone metadata because it's mutablity is questionable
+        metadata = dict(metadata or {})
 
         # Make counts opt in
         show_counts = utils.is_truthy(self.context['request'].query_params.get('related_counts', False))
         # Only include counts on detail routes
         is_detail = not isinstance(self.context['view'], generics.ListAPIView)
         # Weird hack to avoid being called twice
-        is_related_meta = metadata.get('include_status_counts')
+        # get_meta_information is called with both self.related_meta and self.self_meta.
+        # `is` could probably be used here but this seems more comprehensive.
+        is_related_meta = metadata.pop('include_status_counts', False)
 
         if show_counts and is_detail and is_related_meta:
             # Finally, require users to have view_review_logs permissions
             auth = utils.get_user_auth(self.context['request'])
             if auth and auth.logged_in and auth.user.has_perm('view_review_logs', provider):
-                metadata = provider.get_reviewable_status_counts()
+                metadata.update(provider.get_reviewable_status_counts())
 
-        return super(ReviewableCountingRelationshipField, self).get_meta_information(metadata, provider)
+        return super(ReviewableCountsRelationshipField, self).get_meta_information(metadata, provider)
 
 
 class ReviewableRelationshipField(RelationshipField):
